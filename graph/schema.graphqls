@@ -1,0 +1,35 @@
+type House {
+	id: Int!
+	realtorName: String!
+	address: String!	
+	issues: [Issue!]!
+}
+
+type Issue {
+	id: Int!
+	issueTitle: String!
+	issueDescription: String!
+	urgent: Boolean!
+}
+
+input HouseInput {
+	realtorName: String!
+	address: String!
+	issues: [IssueInput!]!
+}
+
+input IssueInput {
+	issueTitle: String!
+	issueDescription: String!
+	urgent: Boolean!
+}
+
+type Mutation {
+	addHouse(input: HouseInput!): House!
+	updateHouse(houseId: Int!, input: HouseInput!): House
+	removeHouse(houseId: Int!): Boolean!
+}
+
+type Query{
+	houses: [House!]!
+}
