@@ -6,8 +6,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/99designs/gqlgen/graphql/handler"
-	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/99designs/gqlgen/handler"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	"github.com/jose-manaloto/joseapp/graph"
@@ -15,9 +14,12 @@ import (
 	"github.com/jose-manaloto/joseapp/graph/model"
 )
 
+var db *gorm.DB;
+var defaultPort = "8000"
+
 func initDB() {
     var err error
-    dataSourceName := "root:@tcp(localhost:3306)/?parseTime=True"
+    dataSourceName := "root:root@tcp(localhost:3306)/?parseTime=True"
     db, err = gorm.Open("mysql", dataSourceName)
 
     if err != nil {
@@ -33,7 +35,7 @@ func initDB() {
     db.Exec("USE test_db")
 
     // Migration to create tables for Order and Item schema
-    db.AutoMigrate(&models.House{}, &models.Issue{})
+    db.AutoMigrate(&model.House{}, &model.Issue{})
 }
 
 func main() {
@@ -44,7 +46,7 @@ func main() {
 
     initDB()
     http.Handle("/", handler.Playground("GraphQL playground", "/query"))
-    http.Handle("/query", handler.GraphQL(go_house_issues_api.NewExecutableSchema(go_house_issues_api.Config{Resolvers: &go_house_issues_api.Resolver{
+    http.Handle("/query", handler.GraphQL(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{
         DB: db,
     }})))
 

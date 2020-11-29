@@ -25,7 +25,7 @@ func (r *mutationResolver) UpdateHouse(ctx context.Context, houseID int, input m
 	var updatedHouse model.House
 	updatedHouse.RealtorName = input.RealtorName
 	updatedHouse.Address = input.Address
-	updatedHouse.Issues = mapIssuesFromInput(input.Issues)
+	updatedHouse.Issues = createIssues(input.Issues)
 	updatedHouse.ID = houseID
 	r.DB.Save(&updatedHouse)
 	return &updatedHouse, nil
@@ -59,14 +59,16 @@ type queryResolver struct{ *Resolver }
 //  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
 //    it when you're done.
 //  - You have helper methods in this file. Move them out to keep these resolver files clean.
-func mapIssuesFromInput(issueInput []model.IssueInput) []model.Issue {
-	var issues []model.Issue
+func createIssues(issueInput []*model.IssueInput) []*model.Issue {
+	var issues []*model.Issue
 	for _, issueInput := range issueInput {
-		issues = append(issues, model.Issue{
+		newIssue := model.Issue{
 			IssueTitle:       issueInput.IssueTitle,
 			IssueDescription: issueInput.IssueDescription,
 			Urgent:           issueInput.Urgent,
-		})
+		}
+
+		issues = append(issues, &newIssue)
 	}
 	return issues
 }
